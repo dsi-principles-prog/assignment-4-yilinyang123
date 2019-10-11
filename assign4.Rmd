@@ -8,17 +8,71 @@ For the regular expression exercises, try writing first using regular expression
 
 # Part 1
 
+```{r}
+library(lubridate)
+```
+
+
 ## R4DS 16.4.5
 
 Create a vector of dates giving the first day of every month in the current year. 
 
+```{r}
+floor_date(today(), unit = "year") + months(1:12)
+```
+
 Write a function that given your birthday (as a date), returns how old you are in years.
 
+```{r}
+get_age <- function(birthday) {
+  span=interval(birthday,today())
+  floor(as.numeric(as.duration(span), "years"))
+}
+birthday <- ymd(19970619)
+get_age(birthday)
+```
+
+
 Write a function that given your birthday, returns the day of the week you were born on. 
+
+```{r}
+get_day <- function(birthday) {
+  wday(birthday)
+}
+birthday <- ymd(19970619)
+get_day(birthday)
+```
+
 
 ## R4DS 14.3.2.1
 
 Given the corpus of common words in stringr::words, create regular expressions that find all words that have seven letters or more. (Since this list is long, you might want to use the match argument to str_view() to show only the matching or non-matching words.)
+
+```{r}
+library(stringr)
+devtools::install_github("VerbalExpressions/RVerbalExpressions")
+library(RVerbalExpressions)
+```
+
+regular expressions
+
+```{r}
+word_list <- stringr::words
+str_view(stringr::words, ".......", match = TRUE)
+```
+
+rverbalexpressions
+
+```{r}
+word_list <- stringr::words
+seven_letter <-rx() %>%
+  rx_start_of_line() %>%
+  rx_word_char() %>% 
+  rx_repeat_previous(7) %>%
+  rx_anything() %>% 
+  rx_end_of_line()
+str_view(word_list,seven_letter,match=TRUE)
+```
 
 ## R4DS 14.3.3.1
 
@@ -26,26 +80,106 @@ Use str_detect to find all words that:
 
 That only contain consonants. (Hint: thinking about matching “not”-vowels.)
 
+regular expressions
+
+```{r}
+index=str_detect(word_list, "^[^aeiou]+$")
+word_list[index]
+```
+
+rverbalexpressions
+
+```{r}
+word_list <- stringr::words
+only_consonants <-rx() %>%
+  rx_start_of_line() %>% 
+  rx_anything_but("aeiou") %>% 
+  rx_end_of_line()
+
+word_list[str_detect(word_list,only_consonants)]
+```
+
 Empirically verify the rule “i before e except after c”.
+
+regular expressions
+
+```{r}
+index=str_detect(word_list, "[^c]ie")
+word_list[index]
+```
+
+rverbalexpressions
+
+```{r}
+ie_rule <-rx() %>%
+  rx_something_but("c") %>% 
+  rx_find("ie")
+  
+word_list[str_detect(word_list,ie_rule)]
+```
+
 
 Create a regular expression that will match telephone numbers as commonly written in the US. Split this up into multiple expressions as needed.
 
-# Part 2
+regular expressions
+
+```{r}
+x <- c("123-456-7890","123.456.7890","(123)456-7890")
+```
+
+format like 123-456-7890 or 123.456.7890
+
+```{r}
+x[str_detect(x, "^\\d{3}[-.]\\d{3}[-.]\\d{4}$")]
+```
+
+format like (123)456-7890
+
+```{r}
+x[str_detect(x, "^\\(\\d{3}\\)\\d{3}-\\d{4}$")]
+```
+
+rverbalexpressions
+
+```{r}
+x <- c("123-456-7890", "(123)456-7890","123.456.7890")
+```
+
+format like 123-456-7890 or 123.456.7890
+
+```{r}
+telrx1 <-rx() %>%
+  rx_start_of_line() %>% 
+  rx_digit() %>% 
+  rx_repeat_previous(3) %>% 
+  rx_any_of("-.") %>% 
+  rx_digit() %>% 
+  rx_repeat_previous(3) %>% 
+  rx_any_of("-.") %>%
+  rx_digit() %>% 
+  rx_repeat_previous(4) %>%
+  rx_end_of_line()
+x[str_detect(x,telrx1)]
+```
 
 
-Choose a dataset (this can be the same dataset as the last assignment, or a new one). Define a predictive modeling problem. Create the appropriate files and notebooks to do the following:
+format like (123)456-7890
 
-1. Describe the data and the problem
+```{r}
+telrx2 <-rx() %>%
+  rx_start_of_line() %>%
+  rx_find("(") %>% 
+  rx_digit() %>% 
+  rx_repeat_previous(3) %>% 
+  rx_find(")") %>% 
+  rx_digit() %>% 
+  rx_repeat_previous(3) %>% 
+  rx_find("-") %>% 
+  rx_digit() %>% 
+  rx_repeat_previous(4) %>%
+  rx_end_of_line()
 
-2. Read in and check data
+x[str_detect(x,telrx2)]
+```
 
-2. Clean up the data. 
-
-*Note: You may request that score for these sections replace your score for the coding portion of Assignment 3.*
-
-4. Using best practices, write four functions which add engineered features to the dataset, including a description and rationale. Include a test to determine whether the features are working as intended. 
-
-5. Prepare the data for modeling
-
-Note: this will form the basis for your midterm project. Take advantage of TA's and my office hours. We can provide feedback and guidance. 
 
