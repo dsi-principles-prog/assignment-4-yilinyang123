@@ -3,7 +3,6 @@ title: "assign4"
 output: html_notebook
 ---
 
-
 For the regular expression exercises, try writing first using regular expressions directly, then try using rverbalexpressions. Provide the code for both. 
 
 # Part 1
@@ -18,7 +17,7 @@ library(lubridate)
 Create a vector of dates giving the first day of every month in the current year. 
 
 ```{r}
-floor_date(today(), unit = "year") + months(1:12)
+floor_date(today(), unit = "year") + months(0:11)
 ```
 
 Write a function that given your birthday (as a date), returns how old you are in years.
@@ -83,7 +82,7 @@ That only contain consonants. (Hint: thinking about matching “not”-vowels.)
 regular expressions
 
 ```{r}
-index=str_detect(word_list, "^[^aeiou]+$")
+index=str_detect(word_list, "^[^aeiou]*$")
 word_list[index]
 ```
 
@@ -101,23 +100,29 @@ word_list[str_detect(word_list,only_consonants)]
 
 Empirically verify the rule “i before e except after c”.
 
+"I before E, except after C" is a mnemonic rule of thumb for English spelling. If one is not sure whether a word is spelled with the sequence ei or ie, the rhyme suggests that the correct order is ie unless the preceding letter is c, in which case it is ei. For example: ie in believe, fierce, collie, die, friend.
+
+Thus, the spelling of cie will break this rule
+
 regular expressions
 
 ```{r}
-index=str_detect(word_list, "[^c]ie")
+index=str_detect(word_list, "cie")
 word_list[index]
 ```
+
+The word "science" "society" break the rule “i before e except after c”.
 
 rverbalexpressions
 
 ```{r}
 ie_rule <-rx() %>%
-  rx_something_but("c") %>% 
-  rx_find("ie")
+  rx_find("cie")
   
 word_list[str_detect(word_list,ie_rule)]
 ```
 
+The word "science" "society" break the rule “i before e except after c”.
 
 Create a regular expression that will match telephone numbers as commonly written in the US. Split this up into multiple expressions as needed.
 
@@ -136,7 +141,7 @@ x[str_detect(x, "^\\d{3}[-.]\\d{3}[-.]\\d{4}$")]
 format like (123)456-7890
 
 ```{r}
-x[str_detect(x, "^\\(\\d{3}\\)\\d{3}-\\d{4}$")]
+x[str_detect(x,'^(\\()\\d{3}(\\))\\d{3}(-)\\d{4}$')]
 ```
 
 rverbalexpressions
@@ -159,6 +164,7 @@ telrx1 <-rx() %>%
   rx_digit() %>% 
   rx_repeat_previous(4) %>%
   rx_end_of_line()
+
 x[str_detect(x,telrx1)]
 ```
 
