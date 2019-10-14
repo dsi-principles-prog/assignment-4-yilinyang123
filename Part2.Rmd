@@ -233,7 +233,7 @@ dest %>%
   select(age,age_under_40,everything())
 ```
 
-** function 3**
+**function 3**
 The absence of date_first_booking means the destination is NDF(no destination found), thus we could add a column to indicate if there is a booking record. Then in prediction, we could eliminate the entries without booking record, and predicted the output, to be NDF.
 
 ```{r function3}
