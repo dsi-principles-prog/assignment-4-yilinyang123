@@ -36,7 +36,7 @@ Write a function that given your birthday, returns the day of the week you were 
 
 ```{r}
 get_day <- function(birthday) {
-  wday(birthday)
+  wday(birthday,label=TRUE)
 }
 birthday <- ymd(19970619)
 get_day(birthday)
