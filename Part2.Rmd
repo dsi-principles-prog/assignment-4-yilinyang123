@@ -128,7 +128,7 @@ dest %>%
   assert(within_bounds(0,120), age)
 ```
 
-There are 781 extreme values in age
+There are 781 extreme values in age. It is possible that people put their year of birth instead of their age.
 
 
 3. Clean up the data. 
